@@ -32,7 +32,10 @@ export const Sidebar = () => {
                         menuItems.map( (text, index) => (
                             <ListItem button key={ text }>
                                 <ListItemIcon>
-                                    { index % 2 ? <InboxOutlinedIcon />: <MailOutlineOutlinedIcon />  }
+                                {/*Cambiamos el tipo de icono, si necesitamos mas iconos buscar en la documentacion
+                                Si es par se pone un icono y se es impar otro */}
+                                
+                                    { index % 2 ? <InboxOutlinedIcon />: <MailOutlineOutlinedIcon />  } 
                                 </ListItemIcon>
                                 <ListItemText primary={ text } />
                             </ListItem>
