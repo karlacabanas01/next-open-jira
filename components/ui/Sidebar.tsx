@@ -12,7 +12,7 @@ const menuItems: string[] = ['Inbox','Starred','Send Email','Drafts']
 
 export const Sidebar = () => {
 
-    const { sidemenuOpen, closeSideMenu  } = useContext( UIContext );
+    const { sidemenuOpen, closeSideMenu  } = useContext( UIContext ); //Cerrar y abrir el side menu
 
 
     return (
@@ -44,6 +44,7 @@ export const Sidebar = () => {
                 </List>
 
                 <Divider />
+
 
                 <List>
                     {
