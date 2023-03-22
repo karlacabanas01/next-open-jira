@@ -1,9 +1,10 @@
+#Los espacios para este archivo son importantes
 services:
   entriesdb:
-    image: mongo:5.0.0
+    image: mongo:5.0.0 #Es recomendado trabajar con versiones estrictas
     container_name: entries-database
     ports:
-      - 27017:27017
+      - 27017:27017 #Puerto de el computador y de la imagen/contendor
     volumes: 
-      - ./mongo:/data/db
+      - ./mongo:/data/db #Se hace el mapeo con un directorio, la carpeta mongo con la data/db, si la carpeta no existe se va a crear
       
