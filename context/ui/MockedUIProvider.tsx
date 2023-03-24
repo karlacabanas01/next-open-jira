@@ -1,5 +1,5 @@
 import { FC, useReducer } from 'react';
-import { UIContext, uiReducer } from './';
+import { UIContext, uiReducer } from '.';
 
 export interface UIState {
     sidemenuOpen: boolean;
@@ -9,13 +9,13 @@ export interface UIState {
 
 
 const UI_INITIAL_STATE: UIState = {
-    sidemenuOpen: false,
-    isAddingEntry: false,
-    isDragging: false,
+    sidemenuOpen: true,
+    isAddingEntry: true,
+    isDragging: true,
 }
 
 
-export const UIProvider:FC = ({ children }) => {
+export const MockedUIProvider:FC = ({ children }) => {
 
     const [state, dispatch] = useReducer( uiReducer, UI_INITIAL_STATE );
     

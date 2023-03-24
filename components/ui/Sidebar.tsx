@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { Box, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 
-
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
 import MailOutlineOutlinedIcon from '@mui/icons-material/MailOutlineOutlined';
 
@@ -10,7 +9,8 @@ import { UIContext } from '../../context/ui';
 const menuItems: string[] = ['Inbox','Starred','Send Email','Drafts']
 
 
-export const Sidebar = () => {
+export const Sidebar = () => { 
+    //Recibe un objeto vacio, para solucionar se puede crear un componente falso
 
     const { sidemenuOpen, closeSideMenu  } = useContext( UIContext ); //Cerrar y abrir el side menu
 

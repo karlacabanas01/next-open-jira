@@ -16,4 +16,5 @@ interface ContextProps {
 }
 
 
-export const UIContext = createContext({} as ContextProps );
+export const UIContext = createContext({sidemenuOpen: true, closeSideMenu:() => {}} as ContextProps );
+//export const UIContext = createContext({sidemenuOpen: true} as ContextProps ); //para pruebas rapidas

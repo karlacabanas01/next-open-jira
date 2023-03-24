@@ -5,6 +5,7 @@ import { EntriesState } from './';
 type EntriesActionType = 
  | { type: '[Entry] Add-Entry', payload:  Entry } 
  | { type: '[Entry] Entry-Update', payload:  Entry } 
+ | { type: '[Entry] Refresh-Data', payload:  Entry[] } //Manda a llamar la base de datos
 
 
 
@@ -28,6 +29,11 @@ export const entriesReducer = ( state:EntriesState, action: EntriesActionType): 
         }
         return entry;
       })
+    }
+  case '[Entry] Refresh-Data':
+    return{
+      ...state,
+      entries: [...action.payload] //me creo un nuevo arreglo con el valor del payload
     }
 
   default:
