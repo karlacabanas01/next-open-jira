@@ -4,6 +4,7 @@ import { AppBar, IconButton, Toolbar, Typography } from '@mui/material';
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 
 import { UIContext } from '../../context/ui';
+import Link from 'next/link';
 
 export const Navbar = () => {
 
@@ -20,8 +21,12 @@ export const Navbar = () => {
               >
                   <MenuOutlinedIcon />
               </IconButton>
-
-              <Typography variant='h6'>OpenJira</Typography>
+              <Link
+                href="/"
+                style={{ color: 'inherit', textDecoration: 'none' }}
+              >
+                <Typography variant="h6">OpenJira</Typography>
+              </Link>
           </Toolbar>
       </AppBar>
   )

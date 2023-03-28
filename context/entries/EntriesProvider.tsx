@@ -1,4 +1,6 @@
 import React, { FC, useEffect, useReducer } from 'react';
+
+import { SnackbarProvider, useSnackbar } from 'notistack';
 import { Entry } from '../../interfaces';
 //import { v4 as uuidv4 } from 'uuid';
 
@@ -27,7 +29,7 @@ children?: React.ReactNode | undefined;
 export const EntriesProvider:FC<Props>  = ({ children }) => {
 
     const [state, dispatch] = useReducer( entriesReducer , Entries_INITIAL_STATE );
-
+    const { enqueueSnackbar } = useSnackbar();
    
     const addNewEntry = async(description: string) => {
          //Agregar una nueva entrada en frontend
@@ -41,10 +43,25 @@ export const EntriesProvider:FC<Props>  = ({ children }) => {
         dispatch({type: '[Entry] Add-Entry', payload: data});
     }
     
-    const updateEntry = async ( {_id, description, status}: Entry) => {
+
+    const updateEntry = async ( {_id, description, status}: Entry, showSnackbar = false) => {
         try {
             const {data}  = await entriesApi.put<Entry>(`/entries/${_id}`, {description, status}); //la api está en el baseURL, solo fallará si la bd esta apagada
             dispatch({type: '[Entry] Entry-Update', payload: data});
+
+            //Mostrar Snackbar
+            if(showSnackbar){
+                enqueueSnackbar('Entrada actualizada', {
+                    variant: "success",
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }
+    
+                })
+            }
+            
         } catch (error) {
             console.log({error})
         }
@@ -64,6 +81,33 @@ export const EntriesProvider:FC<Props>  = ({ children }) => {
         refreshEntries();
     }, []);
 
+    const deleteEntry = async ( entry: Entry, showSnackbar = false ) => {
+        try {
+            const { data } = await entriesApi.delete<Entry>(`/entries/${ entry._id }` )
+ 
+            dispatch({
+                type: '[Entry] - Entry-Deleted',
+                payload: data
+            })
+ 
+            if( showSnackbar ) {
+                enqueueSnackbar('Entrada borrada correctamente',{
+                    variant: 'success',
+                    autoHideDuration: 1500,
+                    anchorOrigin: {
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }
+                })
+            }
+ 
+            
+ 
+        } catch (error) {
+            console.log({ error });
+        }
+    }
+
     return (
         <EntriesContext.Provider value={{
            ...state,
@@ -71,6 +115,7 @@ export const EntriesProvider:FC<Props>  = ({ children }) => {
            //Methods
            addNewEntry,
            updateEntry,
+           deleteEntry,
         }}>
             { children }
         </EntriesContext.Provider>

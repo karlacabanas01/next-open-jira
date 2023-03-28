@@ -1,21 +1,42 @@
 // 1.React, 2.Nextjs, 3.Material, 4.componentes 
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FC, useMemo, useState, useContext } from 'react';
+import { GetServerSideProps } from 'next'
 
-import { DeleteOutline, SaveOutlined } from "@mui/icons-material";
 import { capitalize, Button, Card, CardActions, CardContent, CardHeader, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, TextField, IconButton } from "@mui/material";
 
-import { Layout } from "../../components/layouts";
-import { EntryStatus } from "../../interfaces";
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+
+import { EntriesContext } from '../../context/entries';
+import { dbEntries } from '../../database';
+import { Layout } from '../../components/layouts';
+import { Entry, EntryStatus } from "../../interfaces";
+import { DeleteOutline, SaveOutlined } from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import { dateFunctions } from '../../utils';
+//import { dateFunctions } from '../../utils';
+
 
 
 const validStatus: EntryStatus[] = ['pending', 'in-progress', 'finished'];
 
-export const EntryPage = () => {
+interface Props{
+    entry: Entry 
+}
 
-    const [inputValue,setInputValue] = useState('');
-    const [status,setStatus] = useState<EntryStatus>('pending');
+export const EntryPage:FC<Props> = ({ entry }) => {
+     //siempre tengo esta entry, sino el mismo getServerSideProps me redireccionaria para el home
+
+    const router = useRouter();    ///// esto modificado
+    const { updateEntry, deleteEntry } = useContext(EntriesContext);
+    //console.log({props});
+
+    const [inputValue,setInputValue] = useState( entry.description );
+    const [status,setStatus] = useState<EntryStatus>( entry.status );
     const [touched,setTouched] = useState(false);
+
+    const isNotValid = useMemo(() => inputValue.length <= 0 && touched, []) //Para que la validacion no se repita tanto en el codigo
 
     const onInputValueChanged = (event: ChangeEvent<HTMLInputElement>) => { 
             setInputValue(event.target.value );
@@ -27,11 +48,28 @@ export const EntryPage = () => {
     }
 
     const onSave = () => {
-        console.log({inputValue});
+        //console.log({inputValue});
+        if(inputValue.trim().length === 0) return;
+
+        const updatedEntry: Entry = {
+            ...entry,
+            status,
+            description: inputValue
+        }
+
+        updateEntry(updatedEntry, true);
+
     }
+
+    const onDelete = () => {    ///// esto modificado
+        deleteEntry( entry, true );
+        router.push('/')
+    }
+
+    
     
     return(
-        <Layout title="... ...">
+        <Layout title={inputValue.substring(0, 10) + "..."}>
             <Grid
                 container
                 justifyContent='center'
@@ -40,8 +78,8 @@ export const EntryPage = () => {
                 <Grid item xs={12} sm={8} md={6}>
                     <Card>
                         <CardHeader
-                            title={`Entrada: ${ inputValue } `}
-                            subheader={`Creada hace: ... minutos `}
+                            title={`Entrada: `}
+                            subheader={`Creada ${dateFunctions.getFormatDistanceToNow(entry.createdAt)}`}
 
                         />
                         <CardContent>
@@ -53,7 +91,10 @@ export const EntryPage = () => {
                                 multiline
                                 label="Nueva entrada"
                                 value={inputValue}
+                                onBlur= {() => setTouched(true)} //Si toca el textfield
                                 onChange={onInputValueChanged}
+                                helperText={ isNotValid && 'Ingrese un valor'}
+                                error={isNotValid}
 
                             />
 
@@ -81,10 +122,11 @@ export const EntryPage = () => {
                         </CardContent>
                         <CardActions>
                             <Button
-                                startIcon={<SaveOutlined/>}
+                                startIcon={<SaveOutlined />}
                                 variant="contained"
                                 fullWidth
                                 onClick={onSave}
+                                disabled={inputValue.length <= 0}
                             >
                                Save 
                             </Button>
@@ -95,13 +137,16 @@ export const EntryPage = () => {
 
             </Grid>
 
-            <IconButton sx= {{
-                position: 'fixed',
-                bottom: 30,
-                right: 30,
-                backgroundColor: 'red'  //Se pueden poner los coleres de los temas que tenemos 'text.primary/secondary'
-            }}>
-                <DeleteOutline/>
+            <IconButton 
+                onClick={onDelete}
+                sx= {{
+                    position: 'fixed',
+                    bottom: 30,
+                    right: 30,
+                    backgroundColor: 'red'  //Se pueden poner los coleres de los temas que tenemos 'text.primary/secondary'
+                }}
+            >
+                <DeleteOutline />
             </IconButton>
 
 
@@ -110,5 +155,32 @@ export const EntryPage = () => {
     );
 };
 
+//ServerSideProps
+//Se debe usar cuando el usuario hace la solicitud, cuando hace el request
+//Estamos del lado del servidor
+export const getServerSideProps: GetServerSideProps = async ({params}) => { // ctx : context, params viene del ctx està desesctructurado
+
+    //Primero debemos tarer el id de la base de datos
+    //console.log(params)
+    const {id} = params as {id: string}; //Se tipea solo este pq osinó hay que tipar toda la funcion y es más trabajo
+    
+    const entry = await dbEntries.getEntryById(id);
+
+    if(!entry) { //Si no tenemos un valor en la entrada hacemos la redireccion
+        return{
+            redirect:{
+                destination: '/',
+                permanent: false,
+            }
+        }
+    }
+
+    return {
+        props: { //Lo que se regrese aqui es lo que se va a aver en las props generales
+            entry
+        }
+    }
+}
 
 export default EntryPage;
+

@@ -6,7 +6,7 @@ type EntriesActionType =
  | { type: '[Entry] Add-Entry', payload:  Entry } 
  | { type: '[Entry] Entry-Update', payload:  Entry } 
  | { type: '[Entry] Refresh-Data', payload:  Entry[] } //Manda a llamar la base de datos
-
+ | { type: '[Entry] - Entry-Deleted', payload: Entry }
 
 
 export const entriesReducer = ( state:EntriesState, action: EntriesActionType): EntriesState => {
@@ -36,6 +36,11 @@ export const entriesReducer = ( state:EntriesState, action: EntriesActionType): 
       entries: [...action.payload] //me creo un nuevo arreglo con el valor del payload
     }
 
+  case '[Entry] - Entry-Deleted':
+    return {
+          ...state,
+          entries: state.entries.filter( entry => entry._id !== action.payload._id )
+    }
   default:
    return state;
 

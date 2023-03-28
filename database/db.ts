@@ -5,20 +5,20 @@ import moongose from 'mongoose';
     2 = connecting - conectando
     3 = disconnecting - desconectando
 */
-const mongooConnection = {
+const mongoConnection = {
     isConnected: 0
 }
 
 export const connect = async() => {
-    if (mongooConnection.isConnected) {
+    if (mongoConnection.isConnected) {
         console.log('Ya estabamos conectados');
         return;
     }
 
     if(moongose.connections.length > 0){
-        mongooConnection.isConnected = moongose.connections[0].readyState;
+        mongoConnection.isConnected = moongose.connections[0].readyState;
 
-        if(mongooConnection.isConnected === 1 ){
+        if(mongoConnection.isConnected === 1 ){
             console.log('usando conection anterior')
         }
 
@@ -26,7 +26,7 @@ export const connect = async() => {
     }
 
     await moongose.connect(process.env.MONGO_URL || '' ) 
-    mongooConnection.isConnected = 1;
+    mongoConnection.isConnected = 1;
     console.log('Conectado a mongoDB: ', process.env.MONGO_URL )
 
 }
@@ -35,9 +35,11 @@ export const disconnect = async() =>{
 
     if(process.env.NODE_ENV === 'development')return;
     
-    if(mongooConnection.isConnected === 0 ) return;
+    if(mongoConnection.isConnected === 0 ) return;
 
+    
     await moongose.disconnect();
+    mongoConnection.isConnected = 0;
     console.log('Desconectado de mongoDB')
 }
 
