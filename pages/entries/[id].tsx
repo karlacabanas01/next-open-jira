@@ -27,7 +27,7 @@ interface Props{
 
 export const EntryPage:FC<Props> = ({ entry }) => {
      //siempre tengo esta entry, sino el mismo getServerSideProps me redireccionaria para el home
-
+    
     const router = useRouter();    ///// esto modificado
     const { updateEntry, deleteEntry } = useContext(EntriesContext);
     //console.log({props});
@@ -68,8 +68,10 @@ export const EntryPage:FC<Props> = ({ entry }) => {
 
     
     
-    return(
-        <Layout title={inputValue.substring(0, 10) + "..."}>
+    return (
+        
+        <Layout title={ inputValue.substring(0,20) + '...' }>
+            
             <Grid
                 container
                 justifyContent='center'
@@ -154,6 +156,9 @@ export const EntryPage:FC<Props> = ({ entry }) => {
         </Layout>
     );
 };
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
 
 //ServerSideProps
 //Se debe usar cuando el usuario hace la solicitud, cuando hace el request

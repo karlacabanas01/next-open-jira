@@ -8,6 +8,7 @@ import { Navbar, Sidebar } from '../ui';
 
 interface Props {
     title?: string;
+    children?: string;
 }
 
 export const Layout:FC<Props> = ({ title = 'OpenJira', children }) => {
@@ -21,7 +22,7 @@ export const Layout:FC<Props> = ({ title = 'OpenJira', children }) => {
             <Sidebar />
 
             <Box sx={{ padding: '10px 20px'  }}> 
-                { children }
+                { children}
             </Box>
 
       </Box>
